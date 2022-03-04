@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ApiExcetionMiddleware;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
@@ -39,6 +41,9 @@ namespace WebAPI
                           .AllowAnyMethod();
                 });
             });
+
+            services.AddSwaggerGen();
+
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp";
@@ -52,6 +57,8 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors("CorsPolicy");
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseStaticFiles();
