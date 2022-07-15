@@ -9,13 +9,13 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ColumnsController : ControllerBase
+    public class ColumnController : ControllerBase
     {
         /// <summary>
         /// 取得資料庫所有欄位
         /// </summary>
         [HttpGet]
-        public IActionResult GetColumns()
+        public IActionResult GetColumn()
         {
             string strSql = @"select tab.name as table_name, 
                                     col.column_id,
@@ -32,7 +32,7 @@ namespace WebAPI.Controllers
 
             using (var db = new AppDb())
             {
-                List<Columns> data = db.Connection.Query<Columns>(strSql).ToList();
+                List<Column> data = db.Connection.Query<Column>(strSql).ToList();
                 return Ok(new { data });
             }
         }
@@ -41,8 +41,8 @@ namespace WebAPI.Controllers
         /// 取得指定資料表的所有欄位
         /// </summary>
         [HttpGet]
-        [Route("{tab}")]
-        public IActionResult GetTabColumns(string tab)
+        [Route("{Tab}")]
+        public IActionResult GetTabColumn(string Tab)
         {
             string strSql = @"select col.column_id as id,
                                     col.name,
@@ -55,12 +55,12 @@ namespace WebAPI.Controllers
                                         on tab.object_id = col.object_id
                                     left join sys.types as t
                                     on col.user_type_id = t.user_type_id
-                            where tab.name = @tab
+                            where tab.name = @Tab
                             order by tab.name, column_id;";
 
             using (var db = new AppDb())
             {
-                List<TabColumns> data = db.Connection.Query<TabColumns>(strSql, new { tab }).ToList();
+                List<TabColumn> data = db.Connection.Query<TabColumn>(strSql, new { Tab }).ToList();
                 return Ok(new { data });
             }
         }

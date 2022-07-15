@@ -1,6 +1,6 @@
 ﻿namespace WebAPI.model
 {
-    public class Tables
+    public class Table
     {
         public string table_name { get; set; }
         public string create_date { get; set; }

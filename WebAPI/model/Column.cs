@@ -1,6 +1,6 @@
 ﻿namespace WebAPI.model
 {
-    public class Columns
+    public class Column
     {
         public string table_name { get; set; }
         public int column_id { get; set; }
@@ -10,7 +10,7 @@
         public int precision { get; set; }
     }
 
-    public class TabColumns
+    public class TabColumn
     {
         public int id { get; set; }
         public string name { get; set; }
