@@ -36,7 +36,7 @@ namespace WebAPI
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000")
+                    policy.WithOrigins("http://localhost:8888")
                           .AllowCredentials()
                           .AllowAnyHeader()
                           .AllowAnyMethod();

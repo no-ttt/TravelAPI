@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
     public class TableController : ControllerBase
     {
         /// <summary>
-        /// 取得資料庫所有資料表
+        /// 取得資料庫所有 table
         /// </summary>
         [HttpGet]
         public IActionResult GetTable()
