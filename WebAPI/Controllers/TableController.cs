@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
             using (var db = new AppDb())
             {
                 List <Table> data = db.Connection.Query<Table>(strSql).ToList();
-                return Ok(new { data });
+                return Ok(new { type_name = "Tables", data });
             }
         }
     }

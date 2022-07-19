@@ -19,8 +19,7 @@ namespace WebAPI.Controllers
         {
             string strSql = @"select v.name as view_name,
                                     v.create_date as created,
-                                    v.modify_date as last_modified,
-                                    m.definition
+                                    v.modify_date as last_modified
                                 from sys.views v
                                 join sys.sql_modules m 
                                     on m.object_id = v.object_id
@@ -29,7 +28,7 @@ namespace WebAPI.Controllers
             using (var db = new AppDb())
             {
                 List<View> data = db.Connection.Query<View>(strSql).ToList();
-                return Ok(new { data });
+                return Ok(new { type_name = "View Tables", data });
             }
         }
 
