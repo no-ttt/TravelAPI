@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
             using (var db = new AppDb())
             {
                 List<TabColumn> data = db.Connection.Query<TabColumn>(strSql, new { Tab }).ToList();
-                return Ok(new { data });
+                return Ok(new { tab = Tab, data });
             }
         }
     }

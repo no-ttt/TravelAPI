@@ -5,13 +5,14 @@
         public string view_name { get; set; }
         public string created { get; set; }
         public string last_modified { get; set; }
+        public string definition { get; set; }
     }
 
     public class ViewRelatedTable
     {
 
         public string view_name { get; set; }
-        public string referenced_entity_name { get; set; }
+        public string table_name { get; set; }
         public string entity_type { get; set; }
     }
 

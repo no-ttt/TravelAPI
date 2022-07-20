@@ -19,7 +19,8 @@ namespace WebAPI.Controllers
         {
             string strSql = @"select v.name as view_name,
                                     v.create_date as created,
-                                    v.modify_date as last_modified
+                                    v.modify_date as last_modified,
+                                    m.definition
                                 from sys.views v
                                 join sys.sql_modules m 
                                     on m.object_id = v.object_id
@@ -36,11 +37,11 @@ namespace WebAPI.Controllers
         /// view table 的相關 table
         /// </summary>
         [HttpGet]
-        [Route("RelatedTab")]
-        public IActionResult GetTable()
+        [Route("Related/{Tab}")]
+        public IActionResult GetTable(string Tab)
         {
             string strSql = @"select distinct v.name as view_name,
-                                    o.name as referenced_entity_name,
+                                    o.name as table_name,
                                     o.type_desc as entity_type
                                 from sys.views v
                                 join sys.sql_expression_dependencies d
@@ -48,11 +49,12 @@ namespace WebAPI.Controllers
                                     and d.referenced_id is not null
                                 join sys.objects o
                                     on o.object_id = d.referenced_id
+                                where v.name = @Tab
                                 order by view_name;";
 
             using (var db = new AppDb())
             {
-                List<ViewRelatedTable> data = db.Connection.Query<ViewRelatedTable>(strSql).ToList();
+                List<ViewRelatedTable> data = db.Connection.Query<ViewRelatedTable>(strSql, new { Tab }).ToList();
                 return Ok(new { data });
             }
         }
@@ -82,7 +84,7 @@ namespace WebAPI.Controllers
             using (var db = new AppDb())
             {
                 List<ViewColumn> data = db.Connection.Query<ViewColumn>(strSql, p).ToList();
-                return Ok(new { data });
+                return Ok(new { tab = Tab, data });
             }
         }
     }

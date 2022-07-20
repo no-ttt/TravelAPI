@@ -17,7 +17,7 @@
         public string data_type { get; set; }
         public string max_length { get; set; }
         public int precision { get; set; }
-        public bool is_nullable { get; set; }
+        public string is_nullable { get; set; }
 
     }
 }
