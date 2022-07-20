@@ -5,6 +5,10 @@
         public string view_name { get; set; }
         public string created { get; set; }
         public string last_modified { get; set; }
+    }
+
+    public class ViewDefinition
+    {
         public string definition { get; set; }
     }
 

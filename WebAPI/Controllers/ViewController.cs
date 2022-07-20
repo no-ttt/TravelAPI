@@ -18,18 +18,35 @@ namespace WebAPI.Controllers
         public IActionResult GetView()
         {
             string strSql = @"select v.name as view_name,
-                                    v.create_date as created,
-                                    v.modify_date as last_modified,
-                                    m.definition
-                                from sys.views v
-                                join sys.sql_modules m 
-                                    on m.object_id = v.object_id
-                                order by view_name;";
+                                v.create_date as created,
+                                v.modify_date as last_modified
+                            from sys.views v
+                            order by view_name;";
 
             using (var db = new AppDb())
             {
                 List<View> data = db.Connection.Query<View>(strSql).ToList();
                 return Ok(new { type_name = "View Tables", data });
+            }
+        }
+
+        /// <summary>
+        /// 取得資料庫指定 view table 的建立語法
+        /// </summary>
+        [HttpGet]
+        [Route("Definition/{Tab}")]
+        public IActionResult GetDefinition(string Tab)
+        {
+            string strSql = @"select m.definition
+                                from sys.views v
+                                join sys.sql_modules m 
+                                    on m.object_id = v.object_id
+                                where v.name = @Tab";
+
+            using (var db = new AppDb())
+            {
+                List<ViewDefinition> data = db.Connection.Query<ViewDefinition>(strSql, new { Tab }).ToList();
+                return Ok(new { data });
             }
         }
 
