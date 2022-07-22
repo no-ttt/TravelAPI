@@ -12,96 +12,97 @@ namespace WebAPI.Controllers
     public class ViewController : ControllerBase
     {
         /// <summary>
-        /// 取得資料庫所有 view table
+        /// 取得資料庫所有 View Table
         /// </summary>
         [HttpGet]
-        public IActionResult GetView()
+        public IActionResult GetTable()
         {
-            string strSql = @"select v.name as view_name,
-                                v.create_date as created,
-                                v.modify_date as last_modified
-                            from sys.views v
-                            order by view_name;";
+            string strSql = @"select name,
+                                       create_date as created,
+	                                   modify_date as last_modified
+                                from sys.views
+                                order by name";
 
             using (var db = new AppDb())
             {
-                List<View> data = db.Connection.Query<View>(strSql).ToList();
-                return Ok(new { type_name = "View Tables", data });
-            }
-        }
-
-        /// <summary>
-        /// 取得資料庫指定 view table 的建立語法
-        /// </summary>
-        [HttpGet]
-        [Route("Definition/{Tab}")]
-        public IActionResult GetDefinition(string Tab)
-        {
-            string strSql = @"select m.definition
-                                from sys.views v
-                                join sys.sql_modules m 
-                                    on m.object_id = v.object_id
-                                where v.name = @Tab";
-
-            using (var db = new AppDb())
-            {
-                List<ViewDefinition> data = db.Connection.Query<ViewDefinition>(strSql, new { Tab }).ToList();
+                List<Table> data = db.Connection.Query<Table>(strSql).ToList();
                 return Ok(new { data });
             }
         }
-
         /// <summary>
-        /// view table 的相關 table
-        /// </summary>
-        [HttpGet]
-        [Route("Related/{Tab}")]
-        public IActionResult GetTable(string Tab)
-        {
-            string strSql = @"select distinct v.name as view_name,
-                                    o.name as table_name,
-                                    o.type_desc as entity_type
-                                from sys.views v
-                                join sys.sql_expression_dependencies d
-                                    on d.referencing_id = v.object_id
-                                    and d.referenced_id is not null
-                                join sys.objects o
-                                    on o.object_id = d.referenced_id
-                                where v.name = @Tab
-                                order by view_name;";
-
-            using (var db = new AppDb())
-            {
-                List<ViewRelatedTable> data = db.Connection.Query<ViewRelatedTable>(strSql, new { Tab }).ToList();
-                return Ok(new { data });
-            }
-        }
-
-        /// <summary>
-        /// 所有或指定 view table 的欄位
+        /// 指定 View Table 的欄位
         /// </summary>
         [HttpGet]
         [Route("Column")]
-        public IActionResult GetColumn(string Tab)
+        public IActionResult GetViewColumn(string Tab)
         {
-            string strSql = @"select object_name(c.object_id) as view_name,
-                                    c.column_id,
-                                    c.name as column_name,
-                                    type_name(user_type_id) as data_type,
-                                    c.max_length,
-                                    c.precision
+            string strSql = @"select c.column_id as id,
+                                       c.name as name,
+                                       type_name(user_type_id) as data_type,
+                                       c.max_length,
+                                       c.precision,
+	                                   c.is_nullable
                                 from sys.columns c
                                 join sys.views v 
-                                    on v.object_id = c.object_id
-                                where object_name(c.object_id) = @Tab or @Tab is null
-                                order by view_name, column_id;";
+                                     on v.object_id = c.object_id
+                                where object_name(c.object_id) = @Tab
+                                order by column_id";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);
-             
+
             using (var db = new AppDb())
             {
-                List<ViewColumn> data = db.Connection.Query<ViewColumn>(strSql, p).ToList();
-                return Ok(new { tab = Tab, data });
+                List<Column> data = db.Connection.Query<Column>(strSql, p).ToList();
+                return Ok(new { data });
+            }
+        }
+        /// <summary>
+        /// 指定 view table 引用的表 (uses)
+        /// </summary>
+        [HttpGet]
+        [Route("Uses")]
+        public IActionResult GetUses(string Tab)
+        {
+            string strSql = @"select distinct o.name as table_name
+                                from sys.views v
+                                join sys.sql_expression_dependencies d
+                                     on d.referencing_id = v.object_id
+                                     and d.referenced_id is not null
+                                join sys.objects o
+                                     on o.object_id = d.referenced_id
+                                where v.name = @Tab
+                                order by table_name";
+
+            var p = new DynamicParameters();
+            p.Add("@Tab", Tab);
+
+            using (var db = new AppDb())
+            {
+                List<Use> data = db.Connection.Query<Use>(strSql, p).ToList();
+                return Ok(new { data });
+            }
+        }
+        /// <summary>
+        /// 指定 view table 的 script
+        /// </summary>
+        [HttpGet]
+        [Route("Script")]
+        public IActionResult GetScript(string Tab)
+        {
+            string strSql = @"select m.definition as script
+                                from sys.views v
+                                join sys.sql_modules m 
+                                        on m.object_id = v.object_id
+                                where v.Name = @Tab";
+
+            var p = new DynamicParameters();
+            p.Add("@Tab", Tab);
+
+            using (var db = new AppDb())
+            {
+                List<View> data = db.Connection.Query<View>(strSql, p).ToList();
+                return Ok(new { data });
             }
         }
     }
