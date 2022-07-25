@@ -4,6 +4,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Lib;
 using WebAPI.model;
+using DocxProcessor;
 
 namespace WebAPI.Controllers
 {

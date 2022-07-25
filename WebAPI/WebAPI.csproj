@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -19,5 +19,19 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
   </ItemGroup>
 
+  
+  <ItemGroup>
+    <_TemplateFile Include="Template/**/*" />
+    <Compile Remove="Template\**" />
+    <Content Remove="Template\**" />
+    <EmbeddedResource Remove="Template\**" />
+    <None Remove="Template\**" />
+    <_TemplateFile Remove="Template\**" />
+    <DotNetPublishFiles Include="@(_TemplateFile)">
+      <DestinationRelativePath>Template/%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+    </DotNetPublishFiles>
+    <Content Update="wwwroot\local\**\*.*" CopyToPublishDirectory="Never" />
+    <None Update="nlog.config" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 
 </Project>
