@@ -139,7 +139,7 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 指定 table 引用的表 (uses)
+        /// 指定 Table 引用的表 (uses)
         /// </summary>
         [HttpGet]
         [Route("Uses")]
@@ -164,7 +164,7 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 引用指定 table 的表 (used)
+        /// 引用指定 Table 的表 (used)
         /// </summary>
         [HttpGet]
         [Route("Used")]
@@ -189,7 +189,7 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 指定 table 的 index
+        /// 指定 Table 的 index
         /// </summary>
         [HttpGet]
         [Route("Index")]

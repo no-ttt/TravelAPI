@@ -58,7 +58,7 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 指定 view table 引用的表 (uses)
+        /// 指定 View table 引用的表 (uses)
         /// </summary>
         [HttpGet]
         [Route("Uses")]
@@ -84,7 +84,7 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 指定 view table 的 script
+        /// 指定 View table 的 script
         /// </summary>
         [HttpGet]
         [Route("Script")]
