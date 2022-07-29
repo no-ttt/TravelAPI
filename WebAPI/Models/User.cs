@@ -7,6 +7,10 @@
         public string modify_date { get; set; }
         public string type { get; set; }
         public string authentication_type { get; set; }
+        public string is_disabled { get; set; }
+        public string is_policy_checked { get; set; }
+        public string is_expiration_checked { get; set; }
+
     }
     public class UserTable
     {

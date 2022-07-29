@@ -17,16 +17,21 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult GetUser()
         {
-            string strSql = @"select name,
-                                       create_date,
-                                       modify_date,
-                                       type_desc as type,
-                                       authentication_type_desc as authentication_type
-                                from sys.database_principals
-                                where type not in ('A', 'G', 'R', 'X')
-                                      and sid is not null
-                                      and name != 'guest'
-                                order by name";
+            string strSql = @"select sp.name,
+	                                   sp.create_date,
+	                                   sp.modify_date,
+	                                   sp.type_desc as type,
+	                                   sp.authentication_type_desc as authentication_type,
+	                                   sl.is_disabled,
+	                                   sl.is_policy_checked,
+	                                   sl.is_expiration_checked
+                                from sys.database_principals sp
+                                left join sys.sql_logins sl
+                                          on sp.sid = sl.sid
+                                where sp.type not in ('A', 'G', 'R', 'X')
+                                        and sp.sid is not null
+                                        and sp.name != 'guest'
+                                order by  sp.name";
 
             using (var db = new AppDb())
             {
