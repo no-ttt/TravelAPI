@@ -44,7 +44,7 @@ namespace WebAPI.Controllers
                                      on dep.referencing_id = obj.object_id
                                 left join sys.objects dep_obj
                                      on dep_obj.object_id = dep.referenced_id
-                                where obj.type in ('AF', 'FN', 'FS', 'FT', 'IF', 'TF') and obj.name = @func
+                                where obj.type in ('AF', 'FN', 'FS', 'FT', 'IF', 'TF') and dep_obj.name = @func
                                 order by object_name";
 
             var p = new DynamicParameters();
@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
                                      on o.object_id = dep.referenced_id
                                 join sys.objects ref_o
                                      on dep.referencing_id = ref_o.object_id
-                                where o.type in ('FN', 'TF', 'IF') and o.name = @func
+                                where o.type in ('FN', 'TF', 'IF') and ref_o.name = @func
                                 order by object_name";
 
             var p = new DynamicParameters();

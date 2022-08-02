@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
             using (var db = new AppDb())
             {
                 List<Params> data = db.Connection.Query<Params>(strSql, p).ToList();
-                return Ok(new { data });
+                return Ok(new { name = name, data });
             }
         }
     }
