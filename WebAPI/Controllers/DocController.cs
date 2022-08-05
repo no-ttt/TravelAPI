@@ -24,12 +24,15 @@ namespace WebAPI.Controllers
 
             string columnSql = @"select tab.name as tableName,
                                         col.name,
-                                        t.name as data_type
+                                        t.name as data_type,
+	                                    ISNULL(p.value, '') as des
                                     from sys.tables as tab
                                         inner join sys.columns as col
                                             on tab.object_id = col.object_id
                                         left join sys.types as t
-                                        on col.user_type_id = t.user_type_id            
+		                                    on col.user_type_id = t.user_type_id
+	                                    left join sys.extended_properties as p
+		                                    on tab.object_id = p.major_id and col.column_id = p.minor_id
                                     order by tab.name, column_id";
 
             using (var db = new AppDb())
@@ -47,12 +50,11 @@ namespace WebAPI.Controllers
             {
                 byte[] tmp;
                 var col = column.Where(c => c.tableName == tb.tableName)
-                    .Select(c => new { c.name, c.data_type })
+                    .Select(c => new { c.name, c.data_type, c.des })
                     .ToList();
                 
                 tmp = wordProcessor.Replace(docx, col);
                 tmp = wordProcessor.Replace(tmp, tb);
-                
 
                 docxs.Add(new MemoryStream(tmp));
             }

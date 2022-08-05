@@ -18,10 +18,13 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult GetTable()
         {
-            string strSql = @"select t.name as name,
-                                       t.create_date as created,
-                                       t.modify_date as last_modified
+            string strSql = @"select t.name,
+                                        t.create_date as created,
+                                        t.modify_date as last_modified,
+		                                ISNULL(p.value, '') as des
                                 from sys.tables t
+                                left join sys.extended_properties as p
+		                                on t.object_id = p.major_id and p.minor_id = 0
                                 order by name";
 
             using (var db = new AppDb())
@@ -42,14 +45,17 @@ namespace WebAPI.Controllers
                                     t.name as data_type,
                                     col.max_length,
                                     col.precision,
-                                    col.is_nullable
+                                    col.is_nullable,
+	                                ISNULL(p.value, '') as des
                                 from sys.tables as tab
                                     inner join sys.columns as col
                                         on tab.object_id = col.object_id
                                     left join sys.types as t
-                                    on col.user_type_id = t.user_type_id
+		                                on col.user_type_id = t.user_type_id
+	                                left join sys.extended_properties as p
+		                                on tab.object_id = p.major_id and col.column_id = p.minor_id
                                 where tab.name = @Tab
-                                order by tab.name, column_id";
+                                order by column_id";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);
@@ -69,7 +75,7 @@ namespace WebAPI.Controllers
         {
             string strSql = @"select fk_tab.name as foreign_table,
                                     pk_tab.name as primary_table,
-	                                fk_tab.name + '.' + fk_col.name + ' = ' + pk_tab.name + '.' + pk_col.name as rel,
+	                                fk_tab.name + '.' + fk_col.name + ' → ' + pk_tab.name + '.' + pk_col.name as rel,
                                     fk.name as fk_constraint_name
                                 from sys.foreign_keys fk
                                     inner join sys.tables fk_tab

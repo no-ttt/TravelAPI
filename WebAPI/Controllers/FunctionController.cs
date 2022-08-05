@@ -19,8 +19,11 @@ namespace WebAPI.Controllers
         {
             string strSql = @"select obj.name as name,
 	                                    obj.create_date as created,
-	                                    obj.modify_date as last_modified
+	                                    obj.modify_date as last_modified,
+		                                ISNULL(p.value, '') as des
                                 from sys.objects obj
+                                left join sys.extended_properties as p
+                                        on obj.object_id = p.major_id and p.minor_id = 0
                                 where obj.type in ('FN', 'TF', 'IF')
                                 order by name";
 

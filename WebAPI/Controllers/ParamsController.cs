@@ -15,13 +15,23 @@ namespace WebAPI.Controllers
         /// 指定 Function / Procedure 的 Input / Output
         /// </summary>
         [HttpGet]
-        public IActionResult GetFunctionIO(string name)
+        public IActionResult GetFuncProcIO(string name)
         {
-            string strSql = @"select PARAMETER_MODE as mode,
-	                                PARAMETER_NAME as name,
-	                                DATA_TYPE as data_type
-                                from INFORMATION_SCHEMA.PARAMETERS 
-                                where SPECIFIC_NAME = @name";
+            string strSql = @"select case par.is_output
+                                        when 1 then 'OUT'
+                                        when 0 then 'IN'
+                                    end as mode,
+	                                par.name as name,
+	                                t.name as data_type,
+	                                ISNULL(p.value, '') as des
+                                from sys.objects obj
+                                inner join sys.parameters par
+	                                on obj.object_id = par.object_id
+                                left join sys.extended_properties p
+	                                on par.object_id = p.major_id and par.parameter_id = p.minor_id
+                                left join sys.types t
+	                                on par.system_type_id = t.system_type_id
+                                where obj.name = @name";
 
             var p = new DynamicParameters();
             p.Add("@name", name);

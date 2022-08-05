@@ -17,10 +17,13 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult GetTable()
         {
-            string strSql = @"select name,
-                                       create_date as created,
-	                                   modify_date as last_modified
-                                from sys.views
+            string strSql = @"select v.name,
+                                    v.create_date as created,
+                                    v.modify_date as last_modified,
+                                    ISNULL(p.value, '') as des
+                                from sys.views v
+                                    left join sys.extended_properties as p
+                                        on v.object_id = p.major_id and p.minor_id = 0
                                 order by name";
 
             using (var db = new AppDb())
@@ -37,14 +40,17 @@ namespace WebAPI.Controllers
         public IActionResult GetViewColumn(string Tab)
         {
             string strSql = @"select c.column_id as id,
-                                       c.name as name,
-                                       type_name(user_type_id) as data_type,
-                                       c.max_length,
-                                       c.precision,
-	                                   c.is_nullable
+                                        c.name as name,
+                                        type_name(user_type_id) as data_type,
+                                        c.max_length,
+                                        c.precision,
+	                                    c.is_nullable,
+		                                ISNULL(p.value, '') as des
                                 from sys.columns c
-                                join sys.views v 
-                                     on v.object_id = c.object_id
+                                    join sys.views v 
+                                        on v.object_id = c.object_id
+                                    left join sys.extended_properties as p
+                                        on v.object_id = p.major_id and c.column_id = p.minor_id
                                 where object_name(c.object_id) = @Tab
                                 order by column_id";
 
