@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
             string strSql = @"select t.name,
                                         t.create_date as created,
                                         t.modify_date as last_modified,
-		                                ISNULL(p.value, '') as des
+		                                ISNULL(p.value, '') as remark
                                 from sys.tables t
                                 left join sys.extended_properties as p
 		                                on t.object_id = p.major_id and p.minor_id = 0
@@ -45,8 +45,11 @@ namespace WebAPI.Controllers
                                     t.name as data_type,
                                     col.max_length,
                                     col.precision,
-                                    col.is_nullable,
-	                                ISNULL(p.value, '') as des
+	                                case col.is_nullable
+		                                when 0 then 1
+		                                when 1 then 0
+	                                end as not_nullable,
+	                                ISNULL(p.value, '') as remark
                                 from sys.tables as tab
                                     inner join sys.columns as col
                                         on tab.object_id = col.object_id

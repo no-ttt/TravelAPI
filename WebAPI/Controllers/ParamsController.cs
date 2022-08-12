@@ -18,20 +18,26 @@ namespace WebAPI.Controllers
         public IActionResult GetFuncProcIO(string name)
         {
             string strSql = @"select case par.is_output
-                                        when 1 then 'OUT'
-                                        when 0 then 'IN'
-                                    end as mode,
-	                                par.name as name,
-	                                t.name as data_type,
-	                                ISNULL(p.value, '') as des
-                                from sys.objects obj
-                                inner join sys.parameters par
-	                                on obj.object_id = par.object_id
-                                left join sys.extended_properties p
-	                                on par.object_id = p.major_id and par.parameter_id = p.minor_id
-                                left join sys.types t
-	                                on par.system_type_id = t.system_type_id
-                                where obj.name = @name";
+                                    when 1 then 'OUT'
+                                    when 0 then 'IN'
+                                end as mode,
+	                            par.name as name,
+	                            t.name as data_type,
+	                            par.max_length,
+	                            par.precision,
+	                            case par.is_nullable
+		                            when 0 then 1
+		                            when 1 then 0
+	                            end as not_nullabe,
+	                            ISNULL(p.value, '') as remark
+                            from sys.objects obj
+                            inner join sys.parameters par
+	                            on obj.object_id = par.object_id
+                            left join sys.extended_properties p
+	                            on par.object_id = p.major_id and par.parameter_id = p.minor_id
+                            left join sys.types t
+	                            on par.system_type_id = t.system_type_id
+                            where obj.name = @name";
 
             var p = new DynamicParameters();
             p.Add("@name", name);

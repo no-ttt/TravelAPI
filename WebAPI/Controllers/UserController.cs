@@ -18,16 +18,19 @@ namespace WebAPI.Controllers
         public IActionResult GetUser()
         {
             string strSql = @"select sp.name,
-	                                   sp.create_date,
-	                                   sp.modify_date,
-	                                   sp.type_desc as type,
-	                                   sp.authentication_type_desc as authentication_type,
-	                                   sl.is_disabled,
-	                                   sl.is_policy_checked,
-	                                   sl.is_expiration_checked
+	                                    sp.create_date,
+	                                    sp.modify_date,
+	                                    sp.type_desc as type,
+	                                    sp.authentication_type_desc as authentication_type,
+	                                    case sl.is_disabled
+			                                when 0 then 'True'
+			                                when 1 then 'False'
+		                                end as not_disabled,
+	                                    sl.is_policy_checked,
+	                                    sl.is_expiration_checked
                                 from sys.database_principals sp
                                 left join sys.sql_logins sl
-                                          on sp.sid = sl.sid
+                                            on sp.sid = sl.sid
                                 where sp.type not in ('A', 'G', 'R', 'X')
                                         and sp.sid is not null
                                         and sp.name != 'guest'

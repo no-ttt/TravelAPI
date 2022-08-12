@@ -5,7 +5,10 @@
         public string mode { get; set; }
         public string name { get; set; }
         public string data_type { get; set; }
-        public string des { get; set; }
+        public int max_length { get; set; }
+        public int precision { get; set; }
+        public bool not_nullable { get; set; }
+        public string remark { get; set; }
 
     }
     public class objUse
