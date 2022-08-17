@@ -34,4 +34,7 @@
     <None Update="nlog.config" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
+  
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>

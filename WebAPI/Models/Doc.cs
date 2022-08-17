@@ -11,4 +11,9 @@
         public string data_type { get; set; }
         public string des { get; set;  }
     }
+    public class DocTableDes
+    {
+        public string tbName { get; set; }
+        public string tbDes { get; set; }
+    }
 }

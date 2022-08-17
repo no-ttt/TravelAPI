@@ -18,35 +18,35 @@ namespace WebAPI.Controllers
         public IActionResult GetColumnValue(string Tab)
         {
             string strSql = @"drop table if exists #colAnalysis
-                            create table #colAnalysis (
-	                            I int, 
-	                            Col nvarchar(20), 
-	                            K int, 
-	                            N int
-                            )
+                                create table #colAnalysis (
+	                                I int, 
+	                                Col nvarchar(20), 
+	                                K int, 
+	                                N int
+                                )
 
-                            declare @name nvarchar(100), @i int, @n int
-                            declare @sqlStr varchar(1000)
+                                declare @name nvarchar(100), @i int, @n int
+                                declare @sqlStr varchar(1000)
 
-                            declare aCursor cursor for 
-                            select c.name as ColumnName, c.column_id, p.rows as N
-                            from sys.all_columns c, sys.tables t left join sys.partitions p on t.object_id = p.object_id
-                            where t.object_id = c.object_id
-                            and t.name = @Tab
+                                declare aCursor cursor for 
+                                select c.name as ColumnName, c.column_id, p.rows as N
+                                from sys.all_columns c, sys.tables t left join sys.partitions p on t.object_id = p.object_id
+                                where t.object_id = c.object_id
+                                and t.name = @Tab
 
-                            open aCursor  
-	                            fetch next from aCursor into @name, @i, @n　while @@FETCH_STATUS = 0  
-	                            begin
-		                            select @sqlStr = 'insert #colAnalysis values(' + convert(varchar(20), @i) +
-			                            ', ''' + @name +''', ( select count(distinct ' + @name + ') ' +
-			                            '+ count(distinct case when ' + @name + ' is null then 1 end) from ' + @Tab + '), ' +
-			                            convert(varchar(20), @n) + ' )'
-		                            EXEC ( @sqlStr ) fetch next from aCursor into @name, @i, @n
-	                            end
-                            close aCursor
-                            deallocate aCursor
+                                open aCursor  
+	                                fetch next from aCursor into @name, @i, @n　while @@FETCH_STATUS = 0  
+	                                begin
+		                                select @sqlStr = 'insert #colAnalysis values(' + convert(varchar(20), @i) +
+			                                ', ''' + @name +''', ( select count(distinct ' + @name + ') ' +
+			                                '+ count(distinct case when ' + @name + ' is null then 1 end) from ' + @Tab + '), ' +
+			                                convert(varchar(20), @n) + ' )'
+		                                EXEC ( @sqlStr ) fetch next from aCursor into @name, @i, @n
+	                                end
+                                close aCursor
+                                deallocate aCursor
 
-                            select *, convert(real, K) / N as 'Ratio' from #colAnalysis order by K";
+                                select *, convert(real, K) / N as 'Ratio' from #colAnalysis order by K";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);

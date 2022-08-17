@@ -4,7 +4,7 @@
     {
         public string name { get; set; }
         public float size { get; set; }
-        public float SpaceUsed { get; set; }
+        public float spaceUsed { get; set; }
         public float spaceRemain { get; set; }
         public string position { get; set; }
     }

@@ -18,6 +18,7 @@ namespace WebAPI.Controllers
         {
             List<DocTable> table = new List<DocTable>();
             List<DocColumn> column = new List<DocColumn>();
+            List<DocTableDes> tableDes = new List<DocTableDes>();
             List<Stream> docxs = new List<Stream>();
 
             string tableSql = @"select t.name as tableName from sys.tables t order by name";
@@ -35,29 +36,43 @@ namespace WebAPI.Controllers
 		                                    on tab.object_id = p.major_id and col.column_id = p.minor_id
                                     order by tab.name, column_id";
 
+            string tableDesSql = @"select t.name as tbName,
+                                        ISNULL(p.value, '') as tbDes
+                                    from sys.tables t
+                                        left join sys.extended_properties as p
+                                            on t.object_id = p.major_id and p.minor_id = 0
+                                    order by tbName";
+
             using (var db = new AppDb())
             {
                 table = db.Connection.Query<DocTable>(tableSql).ToList();
                 column = db.Connection.Query<DocColumn>(columnSql).ToList();
+                tableDes = db.Connection.Query<DocTableDes>(tableDesSql).ToList();
             }
 
             // 從實體路徑讀檔案
-            byte[] docx = System.IO.File.ReadAllBytes(".\\Templates\\test.docx");
+            byte[] docx = System.IO.File.ReadAllBytes(".\\Templates\\tableList.docx");
+            byte[] docx2 = System.IO.File.ReadAllBytes(".\\Templates\\tableDetailList.docx");
 
             // 取代
             var wordProcessor = new ReplaceWordTemplate();
+
+            byte[] tmp;
+            tmp = wordProcessor.Replace(docx, tableDes);
+            docxs.Add(new MemoryStream(tmp));
+
             foreach (var tb in table)
             {
-                byte[] tmp;
                 var col = column.Where(c => c.tableName == tb.tableName)
                     .Select(c => new { c.name, c.data_type, c.des })
                     .ToList();
                 
-                tmp = wordProcessor.Replace(docx, col);
+                tmp = wordProcessor.Replace(docx2, col);
                 tmp = wordProcessor.Replace(tmp, tb);
 
                 docxs.Add(new MemoryStream(tmp));
             }
+            
 
             // 取套件
             MergeWordTemplate WordMerger = new MergeWordTemplate();

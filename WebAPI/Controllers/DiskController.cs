@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
     public class DiskController : ControllerBase
     {
         /// <summary>
-        /// 磁碟使用概觀及檔案位置
+        /// 磁碟使用概觀及檔案位置 (MB)
         /// </summary>
         [HttpGet]
         public IActionResult GetDiskOverview()
@@ -32,7 +32,7 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 資料檔案空間使用
+        /// 資料檔案空間使用 (MB)
         /// </summary>
         [HttpGet]
         [Route("DataSpace")]
@@ -71,7 +71,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet]
         [Route("TableSpace")]
-        public IActionResult GetDiskTableSpace()
+        public IActionResult GetDiskTableSpace(string Tab)
         {
             string strSql = @"select 
                                     t.NAME AS TableName,
@@ -93,15 +93,19 @@ namespace WebAPI.Controllers
                                 WHERE 
                                     t.NAME NOT LIKE 'dt%' AND
                                     i.OBJECT_ID > 255 AND   
-                                    i.index_id <= 1
+                                    i.index_id <= 1 AND
+	                                (@Tab is null or t.Name =@Tab)
                                 GROUP BY 
                                     t.NAME, i.object_id, i.index_id, i.name, p.[Rows]
                                 ORDER BY 
-                                    object_name(i.object_id) ";
+                                    object_name(i.object_id)";
+
+            var p = new DynamicParameters();
+            p.Add("@Tab", Tab);
 
             using (var db = new AppDb())
             {
-                List<DiskTableSpace> data = db.Connection.Query<DiskTableSpace>(strSql).ToList();
+                List<DiskTableSpace> data = db.Connection.Query<DiskTableSpace>(strSql, p).ToList();
                 return Ok(new { data });
             }
         }
