@@ -16,4 +16,8 @@
         public int tables { get; set; }
         public float percent_tables { get; set; }
     }
+    public class TbCount
+    {
+        public string tableCount { get; set; }
+    }
 }

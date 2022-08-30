@@ -18,6 +18,22 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult GetTable()
         {
+            /** sort 
+             * string strSql = @"select t.name as name,
+                                        t.create_date as created,
+                                        t.modify_date as last_modified,
+		                                ISNULL(p.value, '') as remark
+                                from sys.tables t
+                                left join sys.extended_properties as p
+		                                on t.object_id = p.major_id and p.minor_id = 0
+                                order by 
+		                                case @sortWay when 'name' then t.name
+			                                when 'created' then t.create_date
+			                                when 'last_modified' then t.modify_date
+			                                when 'remark' then p.value
+		                                end";
+            **/
+
             string strSql = @"select t.name,
                                         t.create_date as created,
                                         t.modify_date as last_modified,

@@ -71,7 +71,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet]
         [Route("TableSpace")]
-        public IActionResult GetDiskTableSpace(string Tab)
+        public IActionResult GetDiskTableSpace()
         {
             string strSql = @"select 
                                     t.NAME AS TableName,
@@ -93,19 +93,15 @@ namespace WebAPI.Controllers
                                 WHERE 
                                     t.NAME NOT LIKE 'dt%' AND
                                     i.OBJECT_ID > 255 AND   
-                                    i.index_id <= 1 AND
-	                                (@Tab is null or t.Name =@Tab)
+                                    i.index_id <= 1
                                 GROUP BY 
                                     t.NAME, i.object_id, i.index_id, i.name, p.[Rows]
                                 ORDER BY 
                                     object_name(i.object_id)";
 
-            var p = new DynamicParameters();
-            p.Add("@Tab", Tab);
-
             using (var db = new AppDb())
             {
-                List<DiskTableSpace> data = db.Connection.Query<DiskTableSpace>(strSql, p).ToList();
+                List<DiskTableSpace> data = db.Connection.Query<DiskTableSpace>(strSql).ToList();
                 return Ok(new { data });
             }
         }

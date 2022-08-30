@@ -30,7 +30,9 @@ namespace WebAPI.Controllers
 
                                 declare aCursor cursor for 
                                 select c.name as ColumnName, c.column_id, p.rows as N
-                                from sys.all_columns c, sys.tables t left join sys.partitions p on t.object_id = p.object_id
+                                from sys.all_columns c, sys.tables t 
+                                left join sys.partitions p 
+                                    on t.object_id = p.object_id and p.index_id = 1
                                 where t.object_id = c.object_id
                                 and t.name = @Tab
 
@@ -46,7 +48,7 @@ namespace WebAPI.Controllers
                                 close aCursor
                                 deallocate aCursor
 
-                                select *, convert(real, K) / N as 'Ratio' from #colAnalysis order by K";
+                                select *, convert(real, K) / N as 'Ratio' from #colAnalysis order by I";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);
@@ -81,10 +83,13 @@ namespace WebAPI.Controllers
                                 group by t.name
                                 order by percent_tables desc";
 
+            string tbCount = @"select count(*) as tableCount from sys.tables";
+
             using (var db = new AppDb())
             {
                 List<DataType> data = db.Connection.Query<DataType>(strSql).ToList();
-                return Ok(new { data });
+                List<TbCount> count = db.Connection.Query<TbCount>(tbCount).ToList();
+                return Ok(new { data, count });
             }
         }
     }
