@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
         /// 指定 Function / Procedure 的 Input / Output
         /// </summary>
         [HttpGet]
-        public IActionResult GetFuncProcIO(string name)
+        public IActionResult GetFuncProcIO(string name, string sortWay)
         {
             string strSql = @"select case par.is_output
                                         when 1 then 'OUT'
@@ -37,10 +37,17 @@ namespace WebAPI.Controllers
 	                                on par.object_id = p.major_id and par.parameter_id = p.minor_id
                                 left join sys.types t
 	                                on par.system_type_id = t.system_type_id
-                                where obj.name = @name order by mode, name";
+                                where obj.name = @name
+                               order by 
+		                                case @sortWay when 'name' then par.name
+			                                when 'mode' then par.is_output
+			                                when 'data_type' then t.name
+			                                when 'remark' then p.value
+		                                end";
 
             var p = new DynamicParameters();
             p.Add("@name", name);
+            p.Add("@sortWay", sortWay);
 
             using (var db = new AppDb())
             {

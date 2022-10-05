@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
         /// 取得資料庫所有 View Table
         /// </summary>
         [HttpGet]
-        public IActionResult GetTable()
+        public IActionResult GetTable(string sortWay)
         {
             string strSql = @"select v.name,
                                     v.create_date as created,
@@ -24,11 +24,19 @@ namespace WebAPI.Controllers
                                 from sys.views v
                                     left join sys.extended_properties as p
                                         on v.object_id = p.major_id and p.minor_id = 0
-                                order by name";
+                                order by 
+		                                case @sortWay when 'name' then v.name
+			                                when 'created' then v.create_date
+			                                when 'last_modified' then v.modify_date
+			                                when 'remark' then p.value
+		                                end";
+
+            var p = new DynamicParameters();
+            p.Add("@sortWay", sortWay);
 
             using (var db = new AppDb())
             {
-                List<Table> data = db.Connection.Query<Table>(strSql).ToList();
+                List<Table> data = db.Connection.Query<Table>(strSql, p).ToList();
                 return Ok(new { data });
             }
         }
@@ -37,7 +45,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet]
         [Route("Column")]
-        public IActionResult GetViewColumn(string Tab)
+        public IActionResult GetViewColumn(string Tab, string sortWay)
         {
             string strSql = @"select c.column_id as id,
                                     c.name as name,
@@ -55,10 +63,16 @@ namespace WebAPI.Controllers
                                 left join sys.extended_properties as p
                                     on v.object_id = p.major_id and c.column_id = p.minor_id
                                 where object_name(c.object_id) = @Tab
-                                order by column_id";
+                                order by 
+		                                case @sortWay when 'name' then c.name
+			                                when 'id' then c.column_id
+			                                when 'data_type' then type_name(user_type_id)
+			                                when 'remark' then p.value
+		                                end";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);
+            p.Add("@sortWay", sortWay);
 
             using (var db = new AppDb())
             {

@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
         /// 取得資料庫所有 Procedure
         /// </summary>
         [HttpGet]
-        public IActionResult GetFunction()
+        public IActionResult GetFunction(string sortWay)
         {
             string strSql = @"select obj.name as name,
 	                                    obj.create_date as created,
@@ -25,11 +25,19 @@ namespace WebAPI.Controllers
 		                                left join sys.extended_properties as p
                                             on obj.object_id = p.major_id and p.minor_id = 0
                                 where obj.type in ('P', 'X')
-                                order by name";
+                                order by 
+		                                case @sortWay when 'name' then obj.name
+			                                when 'created' then obj.create_date
+			                                when 'last_modified' then obj.modify_date
+			                                when 'remark' then p.value
+		                                end";
+
+            var p = new DynamicParameters();
+            p.Add("@sortWay", sortWay);
 
             using (var db = new AppDb())
             {
-                List<Table> data = db.Connection.Query<Table>(strSql).ToList();
+                List<Table> data = db.Connection.Query<Table>(strSql, p).ToList();
                 return Ok(new { data });
             }
         }

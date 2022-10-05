@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
                                 close aCursor
                                 deallocate aCursor
 
-                                select *, convert(real, K) / N as 'Ratio' from #colAnalysis order by I";
+                                select *, iif(N < 1, '', (convert(real, K) / N)) as 'Ratio' from #colAnalysis order by I";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);

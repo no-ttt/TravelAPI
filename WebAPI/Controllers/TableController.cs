@@ -16,10 +16,10 @@ namespace WebAPI.Controllers
         /// 取得資料庫所有 Table
         /// </summary>
         [HttpGet]
-        public IActionResult GetTable()
+        public IActionResult GetTable(string sortWay)
         {
-            /** sort 
-             * string strSql = @"select t.name as name,
+            
+             string strSql = @"select t.name as name,
                                         t.create_date as created,
                                         t.modify_date as last_modified,
 		                                ISNULL(p.value, '') as remark
@@ -32,20 +32,23 @@ namespace WebAPI.Controllers
 			                                when 'last_modified' then t.modify_date
 			                                when 'remark' then p.value
 		                                end";
-            **/
 
-            string strSql = @"select t.name,
-                                        t.create_date as created,
-                                        t.modify_date as last_modified,
-		                                ISNULL(p.value, '') as remark
-                                from sys.tables t
-                                left join sys.extended_properties as p
-		                                on t.object_id = p.major_id and p.minor_id = 0
-                                order by name";
+
+            //string strSql = @"select t.name,
+            //                            t.create_date as created,
+            //                            t.modify_date as last_modified,
+            //                      ISNULL(p.value, '') as remark
+            //                    from sys.tables t
+            //                    left join sys.extended_properties as p
+            //                      on t.object_id = p.major_id and p.minor_id = 0
+            //                    order by name";
+
+            var p = new DynamicParameters();
+            p.Add("@sortWay", sortWay);
 
             using (var db = new AppDb())
             {
-                List<Table> data = db.Connection.Query<Table>(strSql).ToList();
+                List<Table> data = db.Connection.Query<Table>(strSql, p).ToList();
                 return Ok(new { data });
             }
         }
@@ -54,7 +57,7 @@ namespace WebAPI.Controllers
         /// </summary>
         [HttpGet]
         [Route("Column")]
-        public IActionResult GetTabColumn(string Tab)
+        public IActionResult GetTabColumn(string Tab, string sortWay)
         {
             string strSql = @"select col.column_id as id,
                                     col.name,
@@ -74,10 +77,16 @@ namespace WebAPI.Controllers
 	                                left join sys.extended_properties as p
 		                                on tab.object_id = p.major_id and col.column_id = p.minor_id
                                 where tab.name = @Tab
-                                order by column_id";
+                                order by 
+		                                case @sortWay when 'name' then col.name
+			                                when 'id' then col.column_id
+			                                when 'data_type' then t.name
+			                                when 'remark' then p.value
+		                                end";
 
             var p = new DynamicParameters();
             p.Add("@Tab", Tab);
+            p.Add("@sortWay", sortWay);
 
             using (var db = new AppDb())
             {
