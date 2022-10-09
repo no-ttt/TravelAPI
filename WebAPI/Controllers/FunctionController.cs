@@ -49,14 +49,15 @@ namespace WebAPI.Controllers
         public IActionResult GetFunctionUses(string func)
         {
             string strSql = @"select dep_obj.name as object_name,
-                                       dep_obj.type_desc as object_type
+                                    dep_obj.type_desc as object_type
                                 from sys.objects obj
                                 left join sys.sql_expression_dependencies dep
-                                     on dep.referencing_id = obj.object_id
+                                    on dep.referencing_id = obj.object_id
                                 left join sys.objects dep_obj
-                                     on dep_obj.object_id = dep.referenced_id
-                                where obj.type in ('AF', 'FN', 'FS', 'FT', 'IF', 'TF') and dep_obj.name = @func
-                                order by object_name";
+                                    on dep_obj.object_id = dep.referenced_id
+                                where obj.type in ('AF', 'FN', 'FS', 'FT', 'IF', 'TF')
+                                    and obj.name = @func and dep_obj.name is not null
+                                order by object_name;";
 
             var p = new DynamicParameters();
             p.Add("@func", func);
@@ -75,13 +76,14 @@ namespace WebAPI.Controllers
         public IActionResult GetFunctionUsed(string func)
         {
             string strSql = @"select ref_o.name as object_name,
-                                       ref_o.type_desc as object_type
+                                    ref_o.type_desc as object_type
                                 from sys.objects o
                                 join sys.sql_expression_dependencies dep
                                      on o.object_id = dep.referenced_id
                                 join sys.objects ref_o
                                      on dep.referencing_id = ref_o.object_id
-                                where o.type in ('FN', 'TF', 'IF') and ref_o.name = @func
+                                where o.type in ('FN', 'TF', 'IF')
+                                      and o.name = @func and ref_o.name is not null
                                 order by object_name";
 
             var p = new DynamicParameters();
