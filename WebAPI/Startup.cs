@@ -45,7 +45,7 @@ namespace WebAPI
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "sqlschemaInfo", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TravelNote", Version = "v1" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
