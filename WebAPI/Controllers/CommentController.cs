@@ -28,7 +28,12 @@ namespace WebAPI.Controllers
         {
             string mid = Request.Cookies["mid"];
             string strSql = @"
-                select cid, mid, cName, cDes, star5, thumbUp, convert(varchar, since, 111) as create_date, ISNULL((select top 1 1 from ORel where Des = 'like' and OID1 = cid and OID2 = @mid), 0) as [like], img
+                select cid, mid, cName, changeAvatar, avatarURL, avatarPath, cDes, star5, thumbUp, convert(varchar, since, 111) as create_date, img,
+	                ISNULL((select top 1 1 from ORel where Des = 'like' and OID1 = cid and OID2 = @mid), 0) as [like], 
+	                (
+		                case when @mid = (select OwnerMID from Object where OID = cid) then 1
+		                else 0 
+	                end ) as bDel
                 from vd_Comment where PID = @oid
                 order by since desc
             ";
@@ -40,6 +45,7 @@ namespace WebAPI.Controllers
             using (var db = new AppDb())
             {
                 List<SpotComment> data = db.Connection.Query<SpotComment>(strSql, p).ToList();
+
 
                 return Ok(new { data });
             }

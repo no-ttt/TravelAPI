@@ -49,7 +49,10 @@ namespace WebAPI.Controllers
 
             if (Info.changeAvatar)
             {
-                strSql += "insert ORel(OID1, OID2, Des) values(@mid, @aid, 'avatar')";
+                strSql += @"
+                    insert ORel(OID1, OID2, Des) values(@mid, @aid, 'avatar')
+                    update Member set ChangeAvatar = 1 where MID = @mid
+                ";
             }
 
             using (var db = new AppDb())
