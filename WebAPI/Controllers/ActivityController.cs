@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography;
@@ -7,8 +9,10 @@ using Dapper;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using WebAPI.Lib;
 using WebAPI.model;
+using static WebAPI.Startup;
 
 namespace WebAPI.Controllers
 {
