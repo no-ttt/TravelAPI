@@ -126,8 +126,8 @@ namespace WebAPI.Controllers
             StringBuilder StrParam = new StringBuilder();
 
             StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("client_id=726039261276-o4317cal25od66cqojl414lg4k5gdlv3.apps.googleusercontent.com&");
-            StrParam.Append("client_secret=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&");
+            StrParam.Append("client_id=[client_id]&");
+            StrParam.Append("client_secret=[client_secret]&");
             StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/google/callback&");
             StrParam.Append("grant_type=authorization_code&");
 
@@ -237,8 +237,8 @@ namespace WebAPI.Controllers
 
             StringBuilder StrParam = new StringBuilder();
             StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("client_id=171322955816361&");
-            StrParam.Append("client_secret=0f4130c31d40a1bdfcef927c2c179100&");
+            StrParam.Append("client_id=[client_id]&");
+            StrParam.Append("client_secret=[client_secret]&");
             StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/facebook/callback&");
             StrParam.Append("grant_type=authorization_code&");
 
@@ -339,8 +339,8 @@ namespace WebAPI.Controllers
 
             StringBuilder StrParam = new StringBuilder();
             StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("client_id=1418268912328690&");
-            StrParam.Append("client_secret=75edcff61f71d99602c5ab7e60ae9ab8&");
+            StrParam.Append("client_id=[client_id]&");
+            StrParam.Append("client_secret=[client_secret]&");
             StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/facebook/callback&");
             StrParam.Append("grant_type=authorization_code&");
 
