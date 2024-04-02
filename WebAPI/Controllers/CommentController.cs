@@ -46,7 +46,6 @@ namespace WebAPI.Controllers
             {
                 List<SpotComment> data = db.Connection.Query<SpotComment>(strSql, p).ToList();
 
-
                 return Ok(new { data });
             }
         }

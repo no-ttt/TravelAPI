@@ -50,36 +50,19 @@ namespace WebAPI.Controllers
             }
         }
         /// <summary>
-        /// 指定路線的附近景點 (公里)
+        /// 指定路線的附近景點 (公尺)
         /// </summary>
         [HttpGet]
-        [Route("Test")]
-        public IActionResult GetPathNearbySpot(double startLat, double startLon, double endLat, double endLon, float distance)
+        [Route("LineNearbyPoint")]
+        public IActionResult GetPathNearbySpot(string lonLatString, float distance)
         {
             string mid = Request.Cookies["mid"];
-            string strSql = @"
-                declare @lat_1 varchar(max) = Convert(varchar(max), @startLat, 3)
-                declare @lon_1 varchar(max) = Convert(varchar(max), @startLon, 3)
-                declare @lat_2 varchar(max) = Convert(varchar(max), @endLat, 3)
-                declare @lon_2 varchar(max) = Convert(varchar(max), @endLon, 3)
-                declare @g geometry
-                set @g = geometry::STMLineFromText('MULTILINESTRING (('+ @lon_1+' '+@lat_1+', '+@lon_2+' '+@lat_2+'))', 4326);
-
-                declare @CID int
-                select @CID = ClassID from Member where MID = @mid
-                select O.OID, O.CName, O.Type, P.PictureUrl, P.PositionLon, P.PositionLat
-                from Object O, (select O.CName, P.* from CO, Object O, POI P where CO.CID = @CID + 2 and CO.OID = O.OID and O.OID = P.PID) as P
-                where P.PID = O.OID and P.GeoIndex.STWithin(@g.STBuffer(0.03)) = 1
-
-            ";
+            string strSql = @"exec xp_LineNearbyPoint @LonLatString, @mid, @distance";
 
             var p = new DynamicParameters();
-            p.Add("@startLat", startLat);
-            p.Add("@startLon", startLon);
-            p.Add("@endLat", endLat);
-            p.Add("@endLon", endLon);
-            p.Add("@distance", distance);
+            p.Add("@LonLatString", lonLatString);
             p.Add("@mid", mid);
+            p.Add("@distance", distance);
 
             using (var db = new AppDb())
             {

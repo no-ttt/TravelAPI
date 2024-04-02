@@ -201,6 +201,108 @@ namespace WebAPI.Controllers
                 return Redirect("http://localhost:8888/home");
             }
         }
+        // <summary>
+        /// Facebook 驗證登入授權
+        /// </summary>
+        [HttpGet]
+        [Route("facebook/test")]
+        public RedirectResult GetFacebookLogin2()
+        {
+            string strUrl = "https://www.facebook.com/dialog/oauth";
+            StringBuilder StrParam = new StringBuilder();
+
+            StrParam.Append("client_id=171322955816361&");
+            StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/facebook/callback&");
+            StrParam.Append("response_type=code&");
+            StrParam.Append("scope=public_profile&");
+
+            return RedirectPermanent(strUrl + "?" + StrParam.ToString());
+        }
+        /// <summary>
+        /// 接收 Facebook CallBack 回來的參數及取得使用者資訊
+        /// </summary>
+        [HttpGet]
+        [Route("facebook/test/callback")]
+        public IActionResult FBPageLoad2()
+        {
+            // 登入回傳錯誤
+            string AuthError = Request.Query["error"];
+            if (AuthError != null) return RedirectPermanent("");
+
+            string AuthCode = Request.Query["code"];
+            // 沒有獲取授權碼
+            if (AuthCode == null) return RedirectPermanent("");
+
+            string StrUrl = "https://graph.facebook.com/v2.3/oauth/access_token";
+
+            StringBuilder StrParam = new StringBuilder();
+            StrParam.Append("code=" + AuthCode + "&");
+            StrParam.Append("client_id=171322955816361&");
+            StrParam.Append("client_secret=0f4130c31d40a1bdfcef927c2c179100&");
+            StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/facebook/callback&");
+            StrParam.Append("grant_type=authorization_code&");
+
+            string StrReJson = "";
+
+            using (WebClient WClient = new WebClient())
+            {
+                WClient.Headers.Add("content-type", "application/x-www-form-urlencoded");
+                try
+                {
+                    StrReJson = WClient.UploadString(StrUrl, "POST", StrParam.ToString());
+                }
+                catch
+                {
+                    return RedirectPermanent("");
+                }
+            }
+
+            JObject JobjAccToken = JsonConvert.DeserializeObject<JObject>(StrReJson);
+            string AccToken = "";
+
+            try
+            {
+                AccToken = JobjAccToken["access_token"].ToString();
+            }
+            catch
+            {
+                return RedirectPermanent("");
+            }
+
+            string StrInfoUrl = "https://graph.facebook.com/v11.0/me?access_token=" + AccToken + "&debug=all&fields=id,name,picture,email";
+            using (WebClient WClient = new WebClient())
+            {
+                try
+                {
+                    StrReJson = WClient.DownloadString(StrInfoUrl);
+                }
+                catch
+                {
+                    return RedirectPermanent("");
+                }
+
+            }
+
+            JObject JobjInfo = JsonConvert.DeserializeObject<JObject>(StrReJson);
+            string name = "";
+            string picture = "";
+            string msg = "";
+
+            try
+            {
+                name = JobjInfo["name"].ToString();
+                picture = JobjInfo["picture"]["data"]["url"].ToString();
+                msg = JobjInfo["__debug__"]["messages"][1]["message"].ToString();
+            }
+            catch
+            {
+                return RedirectPermanent("");
+            }
+
+            //return RedirectPermanent("http://localhost:8888/home");
+
+            return Ok(new { name = name, picture = picture, url = StrInfoUrl, msg = msg });
+        }
         /// <summary>
         /// Facebook 驗證登入授權
         /// </summary>
