@@ -125,11 +125,7 @@ namespace WebAPI.Controllers
             string StrUrl = "https://oauth2.googleapis.com/token";
             StringBuilder StrParam = new StringBuilder();
 
-            StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("client_id=[client_id]&");
-            StrParam.Append("client_secret=[client_secret]&");
-            StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/google/callback&");
-            StrParam.Append("grant_type=authorization_code&");
+            StrParam.Append("code=" + AuthCode + "&...");  // add client secret
 
             string StrReJson = "";
             using (WebClient WClient = new WebClient())
@@ -236,11 +232,7 @@ namespace WebAPI.Controllers
             string StrUrl = "https://graph.facebook.com/v2.3/oauth/access_token";
 
             StringBuilder StrParam = new StringBuilder();
-            StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("client_id=[client_id]&");
-            StrParam.Append("client_secret=[client_secret]&");
-            StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/facebook/callback&");
-            StrParam.Append("grant_type=authorization_code&");
+            StrParam.Append("code=" + AuthCode + "&...");  // add client secret
 
             string StrReJson = "";
 
@@ -338,11 +330,7 @@ namespace WebAPI.Controllers
             string StrUrl = "https://graph.facebook.com/v2.3/oauth/access_token";
 
             StringBuilder StrParam = new StringBuilder();
-            StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("client_id=[client_id]&");
-            StrParam.Append("client_secret=[client_secret]&");
-            StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/facebook/callback&");
-            StrParam.Append("grant_type=authorization_code&");
+            StrParam.Append("code=" + AuthCode + "&...");  // add client secret
 
             string StrReJson = "";
 
@@ -437,13 +425,9 @@ namespace WebAPI.Controllers
             if (AuthCode == null) return NotFound();
 
             string StrUrl = "https://api.line.me/oauth2/v2.1/token";
-            StringBuilder StrParam = new StringBuilder();
 
-            StrParam.Append("grant_type=authorization_code&");
-            StrParam.Append("code=" + AuthCode + "&");
-            StrParam.Append("redirect_uri=http://localhost:3000/api/OAuth/line/callback&");
-            StrParam.Append("client_id=1657846388&");
-            StrParam.Append("client_secret=76003c3274ba8cf0c6659044c2000d06&");
+            StringBuilder StrParam = new StringBuilder();
+            StrParam.Append("code=" + AuthCode + "&...");  // add client secret
 
             string StrReJson = "";
             using (WebClient WClient = new WebClient())
